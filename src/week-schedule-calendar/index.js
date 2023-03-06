@@ -1,10 +1,12 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import { DaysScheduler } from "./utils/days-scheduler";
+import {TotalTimeInDay} from "./components/total-time-in-day";
+import { ScheduleDisplay } from "./components/schedule-display";
 import moment from "moment";
 
 import './custom.scss'
-import { DaysScheduler } from "./utils/days-scheduler";
 
 export const WeekScheduleCalendar = (props) => {
   const {map} = props;
@@ -24,13 +26,27 @@ export const WeekScheduleCalendar = (props) => {
     if(!dateScheduler) {
       return <div>loading</div>
     }
+    const schedule = dateScheduler.getSheduleForDay(date.toString());
 
-    const schedule = dateScheduler.getSheduleForDay(date.toString())
-    console.log(schedule)
+    if (schedule) {
+      const { workTime, restTime } = schedule
+
+      return (
+        <div className="custom-cell-content">
+          <div className="day-number">{dayNumberText}</div>
+          <div className="custom-content">
+            <TotalTimeInDay workTime={workTime} restTime={restTime} />
+            <ScheduleDisplay />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="custom-cell-content">
         <div className="day-number">{dayNumberText}</div>
-        <div className="custom-content">{}</div>
+        <div className="custom-content">
+        </div>
       </div>
     );
   };

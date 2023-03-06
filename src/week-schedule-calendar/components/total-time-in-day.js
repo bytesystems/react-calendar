@@ -1,0 +1,14 @@
+import React, { memo } from 'react'
+
+export const TotalTimeInDay = memo((props) => {
+  const { workTime, restTime } = props;
+
+  const workTimeMinutes = workTime % 60
+  const workTimeHours = Math.trunc(workTime / 60)
+  const restTimeMinutes = restTime % 60
+  const restTimeHours = restTime > 60 ? Math.trunc(restTime / 60) : restTime
+
+  return (
+    <b>{`${workTimeHours}h${workTimeMinutes} + ${restTimeMinutes}h${restTimeHours} Pause`}</b>
+  )
+})
