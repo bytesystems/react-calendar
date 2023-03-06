@@ -1,0 +1,1 @@
+export const SCHEDULE_EVENT_TYPE = { WORK: 'work', BREAK: 'break'}
