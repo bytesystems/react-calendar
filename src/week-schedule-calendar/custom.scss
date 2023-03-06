@@ -1,0 +1,23 @@
+
+.fc-daygrid-day-top {
+  flex-direction: row !important;
+  height: 100% !important;
+}
+
+// hide events container
+.fc-daygrid-day-events {
+  display: none !important;
+}
+
+.fc-daygrid-day-frame {
+  height: 100% !important;
+}
+
+.fc-daygrid-day-number {
+  height: 100% !important;
+}
+
+.custom-cell-content {
+  width: 100%;
+  height: 100%;
+}
