@@ -20,7 +20,6 @@ export const ScheduleDisplay = memo((props) => {
           </Fragment>
         ))}
       </div>
-      <div>button</div>
     </>
   );
 })
