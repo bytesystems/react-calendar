@@ -16,27 +16,27 @@ export const WeekScheduleCalendar = (props) => {
   useLayoutEffect(() => {
     const deepCopy = JSON.parse(JSON.stringify([...map]));
     const deepCopyMap = new Map(deepCopy.map(([key, value]) => [moment(key).toDate().toString(), value]));
-    
     setDateScheduler(new DaysScheduler(deepCopyMap));
   }, [map, setDateScheduler]);
 
   const dayCellContent = (props) => {
     const { date, dayNumberText } = props
-    
+
     if(!dateScheduler) {
       return <div>loading</div>
     }
-    const schedule = dateScheduler.getSheduleForDay(date.toString());
 
+    const schedule =  dateScheduler.getScheduleForDay(date.toString())
     if (schedule) {
-      const { workTime, restTime } = schedule
+      const totalTimeForDay = dateScheduler.getTotalTimeForDay(date.toString());
+      const { workTime, restTime } = totalTimeForDay
 
       return (
         <div className="custom-cell-content">
           <div className="day-number">{dayNumberText}</div>
           <div className="custom-content">
             <TotalTimeInDay workTime={workTime} restTime={restTime} />
-            <ScheduleDisplay />
+            <ScheduleDisplay schedule={schedule} />
           </div>
         </div>
       );
@@ -64,6 +64,7 @@ export const WeekScheduleCalendar = (props) => {
         initialView="dayGridMonth"
         eventDisplay="none"
         dayCellContent={dayCellContent}
+        contentHeight="auto"
       />
   );
 }

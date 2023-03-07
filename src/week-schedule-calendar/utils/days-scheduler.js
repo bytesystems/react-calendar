@@ -9,7 +9,7 @@ export class DaysScheduler {
 
 
 
-  getSheduleForDay(day) {
+  getTotalTimeForDay(day) {
     const schedule = this.#map.get(day);
 
     if (!schedule) {
@@ -23,8 +23,7 @@ export class DaysScheduler {
     let workTime = 0;
     let restTime = 0;
     for (const chunk of schedule) {
-      const {start, stop} = chunk;      
-      const diff = Math.abs(moment(start).diff(moment(stop), 'minutes'))
+      const diff = DaysScheduler.calculateTimeDiff(chunk);
 
       if(chunk.type === SCHEDULE_EVENT_TYPE.WORK) {
         workTime += diff
@@ -33,6 +32,15 @@ export class DaysScheduler {
       }
     }
     return { workTime, restTime }
+  }
+
+  getScheduleForDay(day) {
+    return this.#map.get(day) ?? null;
+  }
+
+  static calculateTimeDiff(chunk) {
+    const {start, stop} = chunk;
+    return Math.abs(moment(start).diff(moment(stop), 'minutes'))
   }
 }
 
