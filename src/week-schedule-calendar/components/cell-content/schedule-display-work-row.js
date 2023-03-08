@@ -8,6 +8,6 @@ export const ScheduleDisplayWorkRow = memo((props) => {
   const getTimeIn24Format = useCallback((time) => moment(time).format('HH:mm'), [])
 
   return (
-    <p>{getTimeIn24Format(start)} --&gt; {getTimeIn24Format(stop)}</p>
+    <p style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{getTimeIn24Format(start)} --&gt; {getTimeIn24Format(stop)}</p>
   )
 })

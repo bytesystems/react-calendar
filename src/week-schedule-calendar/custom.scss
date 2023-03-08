@@ -47,9 +47,9 @@
 }
 
 .schedule-list {
+  margin-top: 15px;
   max-height: min-content;
   aspect-ratio: 1;
   overflow-y: auto;
-  // overflow-x: auto;
   flex-grow: 1;
 }

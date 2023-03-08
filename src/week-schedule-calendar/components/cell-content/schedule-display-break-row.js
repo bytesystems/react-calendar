@@ -13,5 +13,15 @@ export const ScheduleDisplayBreakRow = memo((props) => {
     return `${restTimeMinutes}h${restTimeHours}`
   }, [chunk])
 
-  return (<p> ---{timeIn24Format} ---</p>)
+  return (
+    <p
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      ---{timeIn24Format} ---
+    </p>
+  );
 })

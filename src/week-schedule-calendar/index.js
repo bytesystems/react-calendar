@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useState } from "react";
+import React, { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import moment from "moment";
@@ -6,9 +6,9 @@ import { DaysScheduler } from "./utils/days-scheduler";
 import {TotalTimeInDay} from "./components/cell-content/total-time-in-day";
 import { ScheduleDisplay } from "./components/cell-content/schedule-display";
 import { ButtonAddSchedule } from "./components/cell-content/button-add-schedule";
+import { ChangeScheduleDialog } from "./components/change-schedule-dialog";
 
 import './custom.scss'
-import { AddScheduleChunkDialog } from "./components/add-schedule-chunk-dialog";
 
 export const WeekScheduleCalendar = (props) => {
   const {map} = props;
@@ -18,6 +18,14 @@ export const WeekScheduleCalendar = (props) => {
   const [hoveredElement, setHoveredElement] = useState(false);
 
   const [dateToChangeSchedule, setDateToChangeSchedule] = useState(null);
+  const changingDaySchedule = useMemo(
+    () =>
+      dateScheduler && dateToChangeSchedule
+        ? dateScheduler.getScheduleForDay(dateToChangeSchedule.toString())
+        : null,
+    [dateScheduler, dateToChangeSchedule]
+  );
+
   const openDialogPopup = useCallback((date) => {
     setDateToChangeSchedule(date)
   }, [setDateToChangeSchedule]);
@@ -31,6 +39,10 @@ export const WeekScheduleCalendar = (props) => {
     const deepCopyMap = new Map(deepCopy.map(([key, value]) => [moment(key).toDate().toString(), value]));
     setDateScheduler(new DaysScheduler(deepCopyMap));
   }, [map, setDateScheduler]);
+
+  const onChangeDialogComplete = useCallback(() => {
+    console.log('on Complete change')
+  }, []);
 
   const DayCellContent = (props) => {
     const { date, dayNumberText, isToday } = props
@@ -86,10 +98,10 @@ export const WeekScheduleCalendar = (props) => {
       <FullCalendar
         firstDay={1}
         headerToolbar={{
-            left: "",
-            center: "title",
-            right: "today,prev,next"
-          }}
+          left: "",
+          center: "title",
+          right: "today,prev,next",
+        }}
         themeSystem="Simplex"
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
@@ -97,7 +109,13 @@ export const WeekScheduleCalendar = (props) => {
         dayCellContent={DayCellContent}
         contentHeight="auto"
       />
-      <AddScheduleChunkDialog onClose={closeDialogPopup} isOpened={!!dateToChangeSchedule} currentDay={dateToChangeSchedule} />
+      <ChangeScheduleDialog
+        onClose={closeDialogPopup}
+        isOpened={!!dateToChangeSchedule}
+        currentDay={dateToChangeSchedule}
+        currentDaySchedule={changingDaySchedule}
+        onConfirm={onChangeDialogComplete}
+      />
     </>
   );
 }

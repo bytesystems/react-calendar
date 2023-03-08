@@ -1,0 +1,32 @@
+.schedule-card-container {
+  padding: 10px;
+
+  display: flex;
+  justify-content: space-between;
+
+  border: 1px solid rgba($color: #000000, $alpha: 0.2);
+  border-radius: 10px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+
+  grid-gap: 10px;
+}
+
+.inputs-container {
+  display: flex;
+  grid-gap: 15px;
+}
+
+.time-input {
+  width: 75px;
+}
+
+.input-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+}
