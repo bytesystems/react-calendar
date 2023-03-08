@@ -25,5 +25,14 @@
   right: 50%;
   bottom: 50%;
 
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
+
+  width: 40vw;
+  height: 70vh;
+
+  background-color: white;
+
+  border-radius: 10px;
+
+  z-index: 2;
 }

@@ -1,5 +1,5 @@
 import React, { memo, Fragment } from 'react'
-import { SCHEDULE_EVENT_TYPE } from '../utils/schedule-event-type';
+import { SCHEDULE_EVENT_TYPE } from '../../utils/schedule-event-type';
 import { ScheduleDisplayBreakRow } from './schedule-display-break-row';
 import { ScheduleDisplayWorkRow } from './schedule-display-work-row';
 import { v4 } from 'uuid';

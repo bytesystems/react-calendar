@@ -1,14 +1,14 @@
 import React, { useCallback, useLayoutEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { DaysScheduler } from "./utils/days-scheduler";
-import {TotalTimeInDay} from "./components/total-time-in-day";
-import { ScheduleDisplay } from "./components/schedule-display";
 import moment from "moment";
-import { ButtonAddSchedule } from "./components/button-add-schedule";
+import { DaysScheduler } from "./utils/days-scheduler";
+import {TotalTimeInDay} from "./components/cell-content/total-time-in-day";
+import { ScheduleDisplay } from "./components/cell-content/schedule-display";
+import { ButtonAddSchedule } from "./components/cell-content/button-add-schedule";
 
 import './custom.scss'
-import { AddScheduleChunk } from "./components/add-schedule-chunk";
+import { AddScheduleChunkDialog } from "./components/add-schedule-chunk-dialog";
 
 export const WeekScheduleCalendar = (props) => {
   const {map} = props;
@@ -45,13 +45,14 @@ export const WeekScheduleCalendar = (props) => {
         <div
           className="custom-cell-content"
           onMouseEnter={() => {
-            setHoveredElement(date.toString())
+            setHoveredElement(date.toString());
           }}
           onMouseLeave={() => {
-            setHoveredElement(null)
+            setHoveredElement(null);
           }}
         >
           <div className="day-number">{dayNumberText}</div>
+
           <div className="custom-content">
             {schedule && totalTimeForDay && (
               <>
@@ -63,8 +64,19 @@ export const WeekScheduleCalendar = (props) => {
               </>
             )}
           </div>
-          {isToday && !hoveredElement && <ButtonAddSchedule onClick={() => {openDialogPopup(date)}} />}
-          {hoveredElement === date.toString() && <ButtonAddSchedule onClick={() => {openDialogPopup(date)}} />}
+
+          <ButtonAddSchedule
+            style={{
+              opacity:
+                (hoveredElement === date.toString()) ||
+                (isToday && !hoveredElement)
+                  ? "1"
+                  : "0",
+            }}
+            onClick={() => {
+              openDialogPopup(date);
+            }}
+          />
         </div>
       );
   };
@@ -85,7 +97,7 @@ export const WeekScheduleCalendar = (props) => {
         dayCellContent={DayCellContent}
         contentHeight="auto"
       />
-      <AddScheduleChunk onClose={closeDialogPopup} isOpened={!!dateToChangeSchedule} />
+      <AddScheduleChunkDialog onClose={closeDialogPopup} isOpened={!!dateToChangeSchedule} currentDay={dateToChangeSchedule} />
     </>
   );
 }

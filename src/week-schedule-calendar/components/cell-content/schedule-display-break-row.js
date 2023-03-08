@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react'
-import { DaysScheduler } from '../utils/days-scheduler';
+import { DaysScheduler } from '../../utils/days-scheduler';
 
 
 export const ScheduleDisplayBreakRow = memo((props) => {
