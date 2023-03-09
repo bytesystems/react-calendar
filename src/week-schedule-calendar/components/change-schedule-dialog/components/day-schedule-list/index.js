@@ -1,16 +1,20 @@
-import React, { memo } from 'react';
+import React, { memo, useContext } from 'react';
 import { DayScheduleCard } from '../day-schedule-card';
+import { DialogContext } from '../../dialog-context';
 import './styles.scss';
-import { v4 } from 'uuid';
 
-export const DayScheduleList = memo(({schedule}) => {
+export const DayScheduleList = memo(() => {
+  const { changingSchedule } = useContext(
+    DialogContext
+  );
   
-  if (!schedule) {
+  if (!changingSchedule) {
     return null;
   }
+
   return (
     <ul className='list-container'>
-      {schedule.map((chunk,i) => <DayScheduleCard key={v4()} scheduleChunk={chunk} index={i} />)}
+      {changingSchedule.map((chunk,i) => <DayScheduleCard scheduleChunk={chunk} key={chunk['_id']} index={i} />)}
     </ul>
   );
 })

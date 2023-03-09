@@ -31,7 +31,7 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
   const changingSchedule = useMemo(() => formik.values.schedule, [formik.values.schedule]);
 
   useEffect(() => {
-    formik.setFieldValue('schedule', JSON.parse(JSON.stringify(currentDaySchedule)) ?? [])
+    formik.setFieldValue('schedule', currentDaySchedule ?JSON.parse(JSON.stringify(currentDaySchedule)).map((chunk) => ({...chunk, start: moment(chunk.start), stop: moment(chunk.stop)})) : [])
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDaySchedule]);
 
@@ -41,7 +41,7 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
 
     return (
       <DialogContext.Provider
-        value={{ changingSchedule, removeScheduleSchunk }}
+        value={{ changingSchedule, removeScheduleSchunk, formik }}
       >
         <PopUp isOpened={isOpened} onClose={onClose}>
           <div
@@ -51,13 +51,14 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
             <div className="header">
               <h2 className="changing-day-title">{currentDayTitle}</h2>
               <div>{JSON.stringify(formik.values)}</div>
+              <div>{JSON.stringify(formik.errors)}</div>
             </div>
             <div
               className="d-flex flex-column flex-grow-1"
               style={{ gridGap: "15px" }}
             >
               <div style={{ flex: "1 1 auto", height: 0 }}>
-                <DayScheduleList schedule={changingSchedule} />
+                <DayScheduleList />
               </div>
               <div className="row">
                 <div className="col">

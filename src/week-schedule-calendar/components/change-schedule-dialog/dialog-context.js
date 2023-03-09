@@ -1,7 +1,8 @@
 import { createContext } from 'react';
 
 export const DialogContext = createContext({
-  // array of awalible steps
+  formik: null,
+
   changingSchedule: [],
 
   removeScheduleSchunk: () => null,
