@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { DayScheduleCard } from '../day-schedule-card';
 import './styles.scss';
+import { v4 } from 'uuid';
 
 export const DayScheduleList = memo(({schedule}) => {
   
@@ -9,7 +10,7 @@ export const DayScheduleList = memo(({schedule}) => {
   }
   return (
     <ul className='list-container'>
-      {schedule.map((chunk) => <DayScheduleCard scheduleChunk={chunk} />)}
+      {schedule.map((chunk,i) => <DayScheduleCard key={v4()} scheduleChunk={chunk} index={i} />)}
     </ul>
   );
 })

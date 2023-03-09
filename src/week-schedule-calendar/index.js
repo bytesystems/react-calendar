@@ -5,10 +5,10 @@ import moment from "moment";
 import { DaysScheduler } from "./utils/days-scheduler";
 import {TotalTimeInDay} from "./components/cell-content/total-time-in-day";
 import { ScheduleDisplay } from "./components/cell-content/schedule-display";
-import { ButtonAddSchedule } from "./components/cell-content/button-add-schedule";
 import { ChangeScheduleDialog } from "./components/change-schedule-dialog";
 
 import './custom.scss'
+import { Button } from "react-bootstrap";
 
 export const WeekScheduleCalendar = (props) => {
   const {map} = props;
@@ -77,10 +77,10 @@ export const WeekScheduleCalendar = (props) => {
             )}
           </div>
 
-          <ButtonAddSchedule
+          <Button
             style={{
               opacity:
-                (hoveredElement === date.toString()) ||
+                hoveredElement === date.toString() ||
                 (isToday && !hoveredElement)
                   ? "1"
                   : "0",
@@ -88,7 +88,7 @@ export const WeekScheduleCalendar = (props) => {
             onClick={() => {
               openDialogPopup(date);
             }}
-          />
+          >+</Button>
         </div>
       );
   };
