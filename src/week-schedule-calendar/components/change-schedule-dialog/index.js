@@ -6,7 +6,8 @@ import { Button } from "react-bootstrap";
 import { useFormik } from "formik"; 
 import * as Yup from 'yup';
 import { SCHEDULE_EVENT_TYPE } from '../../utils/schedule-event-type';
-import { DialogContext } from './dialog-context';
+import { DialogContext } from './dialog-context'
+import ValidationError from 'yup/lib/util/createValidation';
 
 import './styles.scss';
 import { v4 } from 'uuid';
@@ -57,47 +58,75 @@ const validationSchema = Yup.object().shape({
             return acc;
           }, []);
 
-        console.log({ filteredIntervals: mappedIntervals });
-        
+        const errors = [];
+
         for(let i = 0; i < mappedIntervals.length; i++) {
           const target = mappedIntervals[i];
 
-          for(let j = i + 1; j < mappedIntervals.length; j++) {
-            if (target.type !== mappedIntervals[j].type) {
+          for(let j = 0; j < mappedIntervals.length; j++) {
+            if (i === j || target.type !== mappedIntervals[j].type) {
               continue;
             }
 
             const {start: targetStart, stop: targetStop} = target;
             const {start: iteratedStart, stop: iteratedStop} = mappedIntervals[j];
-
+            console.log(i, j)
             if (
               iteratedStart.isValid() &&
               iteratedStop.isValid()
             ) {
+              console.log(`iteratedStart.isValid() &&
+              iteratedStop.isValid()`)
               if (targetStart.isValid()) {
+                console.log(`targetStart.isValid()`)
                 if (
                   moment(targetStart).isSameOrAfter(iteratedStart) &&
                   moment(targetStart).isBefore(iteratedStop)
                 ) {
-                  return this.createError({
+                  errors.push(this.createError({
                     path: `schedule[${i}].start`,
                     message: 'Date range overlaps'
-                  });
+                  }));
+                  errors.push(this.createError({
+                    path: `schedule[${j}].start`,
+                    message: 'Date range overlaps'
+                  }));
+                  errors.push(this.createError({
+                    path: `schedule[${j}].stop`,
+                    message: 'Date range overlaps'
+                  }));
                 }
               }
               if (targetStop.isValid()) {
+                console.log(`targetStop.isValid()`)
                 if (
                   moment(targetStop).isAfter(iteratedStart) &&
                   moment(targetStop).isSameOrBefore(iteratedStop)
                 ) {
-                  return this.createError({
+                  // set errors to target field
+                  errors.push(this.createError({
                     path: `schedule[${i}].stop`,
                     message: 'Date range overlaps'
-                  });
+                  }));
+
+                  //set error that iterate fields also incorrect
+                  errors.push(this.createError({
+                    path: `schedule[${j}].start`,
+                    message: 'Date range overlaps'
+                  }));
+                  errors.push(this.createError({
+                    path: `schedule[${j}].stop`,
+                    message: 'Date range overlaps'
+                  }));
                 }
               }
             }
           }
+        }
+        if (errors.length) {
+          const error = this.createError({message: 'suka blyat'})
+          error.errors = errors;
+          return error;
         }
 
         return true;
@@ -140,7 +169,7 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
           >
             <div className="header">
               <h2 className="changing-day-title">{currentDayTitle}</h2>
-              <div>{JSON.stringify(formik.values)}</div>
+              {/* <div>{JSON.stringify(formik.values)}</div> */}
               <div>{JSON.stringify(formik.errors)}</div>
             </div>
             <div
