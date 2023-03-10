@@ -6,4 +6,8 @@ export const DialogContext = createContext({
   changingSchedule: [],
 
   removeScheduleSchunk: () => null,
+  
+  changingScheduleErrors: [],
+
+  currentDay: null,
 });

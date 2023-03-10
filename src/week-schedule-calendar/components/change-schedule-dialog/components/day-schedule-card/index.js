@@ -6,11 +6,22 @@ import TimePicker from "rc-time-picker";
 import 'rc-time-picker/assets/index.css';
 
 import './styles.scss';
+import moment from 'moment';
 
 export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
-  const { removeScheduleSchunk, formik, changingSchedule } = useContext(
-    DialogContext
-  );
+  const {
+    removeScheduleSchunk,
+    formik,
+    changingSchedule,
+    changingScheduleErrors,
+    currentDay,
+  } = useContext(DialogContext);
+
+  const cardErrors = useMemo(() => changingScheduleErrors[index] ?? null, [changingScheduleErrors, index]);
+  const startErrors = useMemo(() => cardErrors ? cardErrors.start : null, [cardErrors]);
+  const stopErrors = useMemo(() => cardErrors ? cardErrors.stop : null, [cardErrors]);
+
+  const currentDayMoment = useMemo(() => moment(currentDay), [currentDay]);
 
 
   const {type, start, stop} = scheduleChunk;
@@ -22,10 +33,15 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
 
   const onScheduleChange = useCallback(
     (value, index, field) => {
-      changingSchedule[index][field] = value;
+      const val = moment(value);
+      if (!val.isSame(currentDayMoment, 'day')) {
+        changingSchedule[index][field] = moment(currentDayMoment).set('hours', val.hours()).set('minutes', val.minutes());
+      } else {
+        changingSchedule[index][field] = value;
+      }
       formik.setFieldValue("schedule", changingSchedule);
     },
-    [changingSchedule, formik]
+    [changingSchedule, formik, currentDayMoment]
   );
 
   return (
@@ -33,27 +49,40 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
       <div className="card-content">
         <h3>{headerText}</h3>
         <div className="inputs-container">
-          <label className="input-label">
-            from
-            <TimePicker
-              showSecond={false}
-              focusOnOpen={true}
-              format="hh:mm"
-              value={start}
-              onChange={(value) => {onScheduleChange(value, index, 'start')}}
-            />
-          </label>
+          <div style={{width: 'min-content'}}>
+            <label className="input-label">
+              from
+              <TimePicker
+                showSecond={false}
+                focusOnOpen={true}
+                format="HH:mm"
+                value={start}
+                onChange={(value) => {
+                  if(!moment(value).isSame(null,'day'))
+                  onScheduleChange(value, index, "start");
+                }}
+                style={{minWidth: '100px'}}
+              />
+            </label>
+            {startErrors && <span className="text-danger">{startErrors}</span>}
+          </div>
 
-          <label className="input-label">
-            to
-            <TimePicker
-              showSecond={false}
-              focusOnOpen={true}
-              format="hh:mm"
-              value={stop}
-              onChange={(value) => {onScheduleChange(value, index, 'stop')}}
-            />
-          </label>
+          <div style={{width: 'min-content'}}>
+            <label className="input-label">
+              to
+              <TimePicker
+                showSecond={false}
+                focusOnOpen={true}
+                format="HH:mm"
+                value={stop}
+                onChange={(value) => {
+                  onScheduleChange(value, index, "stop");
+                }}
+                style={{minWidth: '100px'}}
+              />
+            </label>
+            {stopErrors && <p className="text-danger">{stopErrors}</p>}
+          </div>
         </div>
       </div>
       <div>
