@@ -1,4 +1,4 @@
-import moment from 'moment/moment';
+import moment from 'moment';
 import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { PopUp } from '../../../pop-up'
 import { DayScheduleList } from './components/day-schedule-list';
@@ -40,36 +40,63 @@ const validationSchema = Yup.object().shape({
       })
     )
     .test(
-      "no-gaps",
-      "Intervals must not overlap or have gaps between them",
+      "no-crosses",
+      "Intervals must not overlap",
       function (value) {
         if (!value || value.length < 2) {
           return true; // allow empty array
         }
         // sort the intervals by start time
-        const sortedIntervals = value
+        const mappedIntervals = value
           .reduce((acc, current) => {
-            if (current.start && current.stop) {
               acc.push({
                 ...current,
                 start: moment(current.start),
                 stop: moment(current.stop),
               });
-            }
             return acc;
-          }, [])
-          .sort((a, b) => a.start.diff(b.start));
+          }, []);
 
-        console.log({ sortedIntervals });
+        console.log({ filteredIntervals: mappedIntervals });
+        
+        for(let i = 0; i < mappedIntervals.length; i++) {
+          const target = mappedIntervals[i];
 
-        // check for overlaps
-        for (let i = 1; i < sortedIntervals.length; i++) {
-          const prev = sortedIntervals[i - 1];
-          const curr = sortedIntervals[i];
-          console.log({ prev, curr });
-          if (curr.start.isBefore(prev.stop)) {
-            console.log("huita");
-            return false; // overlap
+          for(let j = i + 1; j < mappedIntervals.length; j++) {
+            if (target.type !== mappedIntervals[j].type) {
+              continue;
+            }
+
+            const {start: targetStart, stop: targetStop} = target;
+            const {start: iteratedStart, stop: iteratedStop} = mappedIntervals[j];
+
+            if (
+              iteratedStart.isValid() &&
+              iteratedStop.isValid()
+            ) {
+              if (targetStart.isValid()) {
+                if (
+                  moment(targetStart).isSameOrAfter(iteratedStart) &&
+                  moment(targetStart).isBefore(iteratedStop)
+                ) {
+                  return this.createError({
+                    path: `schedule[${i}].start`,
+                    message: 'Date range overlaps'
+                  });
+                }
+              }
+              if (targetStop.isValid()) {
+                if (
+                  moment(targetStop).isAfter(iteratedStart) &&
+                  moment(targetStop).isSameOrBefore(iteratedStop)
+                ) {
+                  return this.createError({
+                    path: `schedule[${i}].stop`,
+                    message: 'Date range overlaps'
+                  });
+                }
+              }
+            }
           }
         }
 
