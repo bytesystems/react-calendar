@@ -64,7 +64,9 @@ export function validate (values) {
     const target = mappedIntervals[i];
 
     for (let j = 0; j < mappedIntervals.length; j++) {
-      if (i === j || (target.type !== mappedIntervals[j].type && target.type === SCHEDULE_EVENT_TYPE.BREAK)) {
+      if (i === j || (target.type !== mappedIntervals[j].type 
+        && target.type === SCHEDULE_EVENT_TYPE.BREAK 
+        && mappedIntervals[j].type !== SCHEDULE_EVENT_TYPE.BREAK)) {
         continue;
       }
 
