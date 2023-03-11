@@ -3,10 +3,11 @@ import { SCHEDULE_EVENT_TYPE } from '../../../../utils/schedule-event-type';
 import { CloseButton } from 'react-bootstrap';
 import { DialogContext } from '../../dialog-context';
 import TimePicker from "rc-time-picker";
-import 'rc-time-picker/assets/index.css';
-
-import './styles.scss';
 import moment from 'moment';
+import 'rc-time-picker/assets/index.css';
+import './styles.scss';
+
+
 
 export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
   const {
@@ -64,7 +65,7 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
                 style={{minWidth: '100px'}}
               />
             </label>
-            {startErrors && <span className="text-danger">{startErrors}</span>}
+            {startErrors && <span className="text-danger">{JSON.stringify(startErrors)}</span>}
           </div>
 
           <div style={{width: 'min-content'}}>
@@ -81,7 +82,7 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
                 style={{minWidth: '100px'}}
               />
             </label>
-            {stopErrors && <p className="text-danger">{stopErrors}</p>}
+            {stopErrors && <p className="text-danger">{JSON.stringify(stopErrors)}</p>}
           </div>
         </div>
       </div>

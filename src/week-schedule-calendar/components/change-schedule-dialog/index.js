@@ -7,10 +7,10 @@ import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { SCHEDULE_EVENT_TYPE } from '../../utils/schedule-event-type';
 import { DialogContext } from './dialog-context'
-import ValidationError from 'yup/lib/util/createValidation';
+import { v4 } from 'uuid';
+import { validate } from '../../utils/errors-builder';
 
 import './styles.scss';
-import { v4 } from 'uuid';
 
 const validationSchema = Yup.object().shape({
   schedule: Yup.array()
@@ -18,120 +18,120 @@ const validationSchema = Yup.object().shape({
       Yup.object().shape({
         type: Yup.mixed().oneOf(Object.values(SCHEDULE_EVENT_TYPE)),
         start: Yup.date()
-          .test((value, ctx) => {
-            if (!value) {
-              return ctx.createError({ message: "date is empty" });
-            }
-            return true;
-          })
+          // .test((value, ctx) => {
+          //   if (!value) {
+          //     return ctx.createError({ message: "date is empty" });
+          //   }
+          //   return true;
+          // })
           .nullable(),
         stop: Yup.date()
-          .test((value, ctx) => {
-            if (!value) {
-              return ctx.createError({ message: "date is empty" });
-            }
-            return true;
-          })
+          // .test((value, ctx) => {
+          //   if (!value) {
+          //     return ctx.createError({ message: "date is empty" });
+          //   }
+          //   return true;
+          // })
           .nullable()
-          .when("start", (start, schema) =>
-            start
-              ? schema.min(start, "Stop date must be after start date.")
-              : schema
-          ),
+          // .when("start", (start, schema) =>
+          //   start
+          //     ? schema.min(start, "Stop date must be after start date.")
+          //     : schema
+          // ),
       })
     )
-    .test(
-      "no-crosses",
-      "Intervals must not overlap",
-      function (value) {
-        if (!value || value.length < 2) {
-          return true; // allow empty array
-        }
-        // sort the intervals by start time
-        const mappedIntervals = value
-          .reduce((acc, current) => {
-              acc.push({
-                ...current,
-                start: moment(current.start),
-                stop: moment(current.stop),
-              });
-            return acc;
-          }, []);
+    // .test(
+    //   "no-crosses",
+    //   "Intervals must not overlap",
+    //   function (value) {
+    //     if (!value || value.length < 2) {
+    //       return true; // allow empty array
+    //     }
+    //     // sort the intervals by start time
+    //     const mappedIntervals = value
+    //       .reduce((acc, current) => {
+    //           acc.push({
+    //             ...current,
+    //             start: moment(current.start),
+    //             stop: moment(current.stop),
+    //           });
+    //         return acc;
+    //       }, []);
 
-        const errors = [];
+    //     const errors = [];
 
-        for(let i = 0; i < mappedIntervals.length; i++) {
-          const target = mappedIntervals[i];
+    //     for(let i = 0; i < mappedIntervals.length; i++) {
+    //       const target = mappedIntervals[i];
 
-          for(let j = 0; j < mappedIntervals.length; j++) {
-            if (i === j || target.type !== mappedIntervals[j].type) {
-              continue;
-            }
+    //       for(let j = 0; j < mappedIntervals.length; j++) {
+    //         if (i === j || target.type !== mappedIntervals[j].type) {
+    //           continue;
+    //         }
 
-            const {start: targetStart, stop: targetStop} = target;
-            const {start: iteratedStart, stop: iteratedStop} = mappedIntervals[j];
-            console.log(i, j)
-            if (
-              iteratedStart.isValid() &&
-              iteratedStop.isValid()
-            ) {
-              console.log(`iteratedStart.isValid() &&
-              iteratedStop.isValid()`)
-              if (targetStart.isValid()) {
-                console.log(`targetStart.isValid()`)
-                if (
-                  moment(targetStart).isSameOrAfter(iteratedStart) &&
-                  moment(targetStart).isBefore(iteratedStop)
-                ) {
-                  errors.push(this.createError({
-                    path: `schedule[${i}].start`,
-                    message: 'Date range overlaps'
-                  }));
-                  errors.push(this.createError({
-                    path: `schedule[${j}].start`,
-                    message: 'Date range overlaps'
-                  }));
-                  errors.push(this.createError({
-                    path: `schedule[${j}].stop`,
-                    message: 'Date range overlaps'
-                  }));
-                }
-              }
-              if (targetStop.isValid()) {
-                console.log(`targetStop.isValid()`)
-                if (
-                  moment(targetStop).isAfter(iteratedStart) &&
-                  moment(targetStop).isSameOrBefore(iteratedStop)
-                ) {
-                  // set errors to target field
-                  errors.push(this.createError({
-                    path: `schedule[${i}].stop`,
-                    message: 'Date range overlaps'
-                  }));
+    //         const {start: targetStart, stop: targetStop} = target;
+    //         const {start: iteratedStart, stop: iteratedStop} = mappedIntervals[j];
+    //         console.log(i, j)
+    //         if (
+    //           iteratedStart.isValid() &&
+    //           iteratedStop.isValid()
+    //         ) {
+    //           console.log(`iteratedStart.isValid() &&
+    //           iteratedStop.isValid()`)
+    //           if (targetStart.isValid()) {
+    //             console.log(`targetStart.isValid()`)
+    //             if (
+    //               moment(targetStart).isSameOrAfter(iteratedStart) &&
+    //               moment(targetStart).isBefore(iteratedStop)
+    //             ) {
+    //               errors.push(this.createError({
+    //                 path: `schedule[${i}].start`,
+    //                 message: 'Date range overlaps'
+    //               }));
+    //               errors.push(this.createError({
+    //                 path: `schedule[${j}].start`,
+    //                 message: 'Date range overlaps'
+    //               }));
+    //               errors.push(this.createError({
+    //                 path: `schedule[${j}].stop`,
+    //                 message: 'Date range overlaps'
+    //               }));
+    //             }
+    //           }
+    //           if (targetStop.isValid()) {
+    //             console.log(`targetStop.isValid()`)
+    //             if (
+    //               moment(targetStop).isAfter(iteratedStart) &&
+    //               moment(targetStop).isSameOrBefore(iteratedStop)
+    //             ) {
+    //               // set errors to target field
+    //               errors.push(this.createError({
+    //                 path: `schedule[${i}].stop`,
+    //                 message: 'Date range overlaps'
+    //               }));
 
-                  //set error that iterate fields also incorrect
-                  errors.push(this.createError({
-                    path: `schedule[${j}].start`,
-                    message: 'Date range overlaps'
-                  }));
-                  errors.push(this.createError({
-                    path: `schedule[${j}].stop`,
-                    message: 'Date range overlaps'
-                  }));
-                }
-              }
-            }
-          }
-        }
-        if (errors.length) {
-          const error = this.createError({message: 'suka blyat'})
-          error.errors = errors;
-          return error;
-        }
+    //               //set error that iterate fields also incorrect
+    //               errors.push(this.createError({
+    //                 path: `schedule[${j}].start`,
+    //                 message: 'Date range overlaps'
+    //               }));
+    //               errors.push(this.createError({
+    //                 path: `schedule[${j}].stop`,
+    //                 message: 'Date range overlaps'
+    //               }));
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //     if (errors.length) {
+    //       const error = this.createError({message: 'suka blyat'})
+    //       error.errors = errors;
+    //       return error;
+    //     }
 
-        return true;
-      }
-    ),
+    //     return true;
+    //   }
+    // ),
 });
 
 export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, currentDaySchedule, onConfirm }) => {
@@ -140,7 +140,7 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
     return moment(currentDay).format('dddd, D. MMMM YYYY')
   }, [currentDay]);
   
-  const formik = useFormik({initialValues: { schedule: [] }, validationSchema});
+  const formik = useFormik({initialValues: { schedule: [] }, validationSchema, validate });
 
   const changingSchedule = useMemo(() => formik.values.schedule ?? [], [formik.values.schedule]);
   const changingScheduleErrors = useMemo(() => formik.errors.schedule ?? [], [formik.errors.schedule]);
