@@ -135,32 +135,56 @@ const validationSchema = Yup.object().shape({
 });
 
 export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, currentDaySchedule, onConfirm }) => {
+  console.log(currentDaySchedule)
 
   const currentDayTitle = useMemo(() => {
     return moment(currentDay).format('dddd, D. MMMM YYYY')
   }, [currentDay]);
-  
-  const formik = useFormik({initialValues: { schedule: [] }, validationSchema, validate });
 
-  const changingSchedule = useMemo(() => formik.values.schedule ?? [], [formik.values.schedule]);
-  const changingScheduleErrors = useMemo(() => formik.errors.schedule ?? [], [formik.errors.schedule]);
+  let error = false;
 
-  useEffect(() => {
-    formik.setFieldValue('schedule', currentDaySchedule ?JSON.parse(JSON.stringify(currentDaySchedule)).map((chunk) => ({...chunk, start: moment(chunk.start), stop: moment(chunk.stop)})) : [])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentDaySchedule]);
+  const findOverlappingObjects = (arr) => {
+    // Sort the array by the start time in ascending order
+    arr.sort((a, b) => (a.start > b.start) ? 1 : -1);
 
-  const removeScheduleSchunk = useCallback((index) => {
-    formik.setFieldValue('schedule', changingSchedule.filter((_, i) => index !== i))
-  }, [changingSchedule, formik]);
+    // Loop through the sorted array, comparing adjacent objects
+    for (let i = 0; i < arr.length - 1; i++) {
+      let currentObj = arr[i];
+      let nextObj = arr[i + 1];
 
-  const addScheduleChunk = useCallback((eventType) => {
-    formik.setFieldValue('schedule', [...changingSchedule, {type: eventType, start: null, stop: null, _id: v4()}])
-  }, [formik, changingSchedule])
+      // Check if the stop time of the current object overlaps with the start time of the next object
+      if (currentObj.stop >= nextObj.start) {
+        error = true;
+        currentObj.invalid = true;
+        nextObj.invalid = true;
+      }
+    }
+
+    return arr;
+  }
+
+
+  // const formik = useFormik({initialValues: { schedule: [] }, validationSchema, validate });
+  //
+  // const changingSchedule = useMemo(() => formik.values.schedule ?? [], [formik.values.schedule]);
+  // const changingScheduleErrors = useMemo(() => formik.errors.schedule ?? [], [formik.errors.schedule]);
+  //
+  // useEffect(() => {
+  //   formik.setFieldValue('schedule', currentDaySchedule ?JSON.parse(JSON.stringify(currentDaySchedule)).map((chunk) => ({...chunk, start: moment(chunk.start), stop: moment(chunk.stop)})) : [])
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [currentDaySchedule]);
+  //
+  // const removeScheduleChunk = useCallback((index) => {
+  //   formik.setFieldValue('schedule', changingSchedule.filter((_, i) => index !== i))
+  // }, [changingSchedule, formik]);
+  //
+  // const addScheduleChunk = useCallback((eventType) => {
+  //   formik.setFieldValue('schedule', [...changingSchedule, {type: eventType, start: null, stop: null, _id: v4()}])
+  // }, [formik, changingSchedule])
 
     return (
       <DialogContext.Provider
-        value={{ changingSchedule, removeScheduleSchunk, formik, changingScheduleErrors, currentDay }}
+        value={{ date: currentDay, schedule: currentDaySchedule }}
       >
         <PopUp isOpened={isOpened} onClose={onClose}>
           <div
@@ -170,7 +194,7 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
             <div className="header">
               <h2 className="changing-day-title">{currentDayTitle}</h2>
               {/* <div>{JSON.stringify(formik.values)}</div> */}
-              <div>{JSON.stringify(formik.errors)}</div>
+              {/*<div>{JSON.stringify(formik.errors)}</div>*/}
             </div>
             <div
               className="d-flex flex-column flex-grow-1"
@@ -180,16 +204,16 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
                 <DayScheduleList />
               </div>
               <div className="row">
-                <div className="col">
-                  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.WORK)}>
-                    add work time
-                  </Button>
-                </div>
-                <div className="col">
-                  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.BREAK)}>
-                    add rest time
-                  </Button>
-                </div>
+                {/*<div className="col">*/}
+                {/*  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.WORK)}>*/}
+                {/*    add work time*/}
+                {/*  </Button>*/}
+                {/*</div>*/}
+                {/*<div className="col">*/}
+                {/*  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.BREAK)}>*/}
+                {/*    add rest time*/}
+                {/*  </Button>*/}
+                {/*</div>*/}
               </div>
             </div>
             <div className="d-flex flex-row-reverse">

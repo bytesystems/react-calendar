@@ -9,17 +9,20 @@ import moment from "moment";
 
 
 export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
+
+    console.log('scheduleChunk: ',scheduleChunk)
+
   const {
-    removeScheduleSchunk,
+    removeScheduleChunk,
     formik,
     changingSchedule,
     changingScheduleErrors,
     currentDay,
   } = useContext(DialogContext);
 
-  const cardErrors = useMemo(() => changingScheduleErrors[index] ?? null, [changingScheduleErrors, index]);
-  const startErrors = useMemo(() => cardErrors ? cardErrors.start : null, [cardErrors]);
-  const stopErrors = useMemo(() => cardErrors ? cardErrors.stop : null, [cardErrors]);
+  // const cardErrors = useMemo(() => changingScheduleErrors[index] ?? null, [changingScheduleErrors, index]);
+  // const startErrors = useMemo(() => cardErrors ? cardErrors.start : null, [cardErrors]);
+  // const stopErrors = useMemo(() => cardErrors ? cardErrors.stop : null, [cardErrors]);
 
   const currentDayMoment = useMemo(() => moment(currentDay), [currentDay]);
 
@@ -53,45 +56,12 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
             <RangeInput
                 inputClassName="form-control"
                 onChange={(e) => console.log(e)}
+                timespan={scheduleChunk}
             />
-          {/*<div style={{width: 'min-content'}}>*/}
-          {/*  <label className="input-label">*/}
-          {/*    from*/}
-          {/*    <TimePicker*/}
-          {/*      showSecond={false}*/}
-          {/*      focusOnOpen={true}*/}
-          {/*      format="HH:mm"*/}
-          {/*      value={start}*/}
-          {/*      onChange={(value) => {*/}
-          {/*        if(!moment(value).isSame(null,'day'))*/}
-          {/*        onScheduleChange(value, index, "start");*/}
-          {/*      }}*/}
-          {/*      style={{minWidth: '100px'}}*/}
-          {/*    />*/}
-          {/*  </label>*/}
-          {/*  {startErrors && <span className="text-danger">{JSON.stringify(startErrors)}</span>}*/}
-          {/*</div>*/}
-
-          {/*<div style={{width: 'min-content'}}>*/}
-          {/*  <label className="input-label">*/}
-          {/*    to*/}
-          {/*    <TimePicker*/}
-          {/*      showSecond={false}*/}
-          {/*      focusOnOpen={true}*/}
-          {/*      format="HH:mm"*/}
-          {/*      value={stop}*/}
-          {/*      onChange={(value) => {*/}
-          {/*        onScheduleChange(value, index, "stop");*/}
-          {/*      }}*/}
-          {/*      style={{minWidth: '100px'}}*/}
-          {/*    />*/}
-          {/*  </label>*/}
-          {/*  {stopErrors && <p className="text-danger">{JSON.stringify(stopErrors)}</p>}*/}
-          {/*</div>*/}
         </div>
       </div>
       <div>
-        <CloseButton onClick={() => removeScheduleSchunk(index)} />
+        <CloseButton onClick={() => removeScheduleChunk(index)} />
       </div>
     </li>
   );

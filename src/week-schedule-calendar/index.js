@@ -19,10 +19,11 @@ export const WeekScheduleCalendar = (props) => {
 
   const [dateToChangeSchedule, setDateToChangeSchedule] = useState(null);
   const changingDaySchedule = useMemo(
-    () =>
-      dateScheduler && dateToChangeSchedule
-        ? dateScheduler.getScheduleForDay(dateToChangeSchedule.toString())
-        : null,
+    () => {
+      return dateScheduler && dateToChangeSchedule
+          ? dateScheduler.getScheduleForDay(format(dateToChangeSchedule,'yyyyMMdd'))
+          : null
+    },
     [dateScheduler, dateToChangeSchedule]
   );
 
@@ -35,11 +36,6 @@ export const WeekScheduleCalendar = (props) => {
   }, [setDateToChangeSchedule]);
 
   useLayoutEffect(() => {
-
-    // const deepCopy = JSON.parse(JSON.stringify([...map]));
-    // const deepCopyMap = new Map(deepCopy.map(([key, value]) => [moment(key).toDate().toString(), value]));
-    //
-    // console.log(map,deepCopyMap)
     setDateScheduler(new DaysScheduler(map));
   }, [map, setDateScheduler]);
 

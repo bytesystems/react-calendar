@@ -5,10 +5,12 @@ export const RangeInput = (props) => {
 
     const {className,inputClasses,onChange,errorMessageSameTime,errorMessageInvalidOrder, timespan} = props;
 
+    console.log('timespan: ',timespan)
+
     const [start,setStart] = useState(timespan?.start ? timespan.start : null)
     const [stop,setStop] = useState(timespan?.stop ? timespan.stop : null)
-    const [duration,setDuration] = useState({minutes: 0, text:"0h"})
-    const [valid,setValid] = useState(false)
+    const [duration,setDuration] = useState(timespan?.duration ? timespan.duration : {minutes: 0, text:"0h"})
+    const [valid,setValid] = useState(timespan?.valid ? timespan.valid : false)
     const [error,setError] = useState("")
 
     function calculateDuration(start, end) {
@@ -72,10 +74,12 @@ export const RangeInput = (props) => {
             <TimeInput
                 onChange={onStartChangeHandler}
                 className={`start${error ? " invalid":""}`}
+                initalValue={start}
             />
             <TimeInput
                 onChange={onStopChangeHandler}
                 className={`stop${error ? " invalid":""}`}
+                initalValue={stop}
             />
             {error && <div>{error}</div>}
             <div>{duration.text}</div>

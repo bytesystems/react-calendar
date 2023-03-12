@@ -1,13 +1,9 @@
 import { createContext } from 'react';
 
 export const DialogContext = createContext({
-  formik: null,
+  date: null,
+  schedule: [],
+  // removeScheduleChunk: () => null,
+  // changingScheduleErrors: [],
 
-  changingSchedule: [],
-
-  removeScheduleSchunk: () => null,
-  
-  changingScheduleErrors: [],
-
-  currentDay: null,
 });

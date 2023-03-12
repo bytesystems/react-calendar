@@ -4,17 +4,17 @@ import { DialogContext } from '../../dialog-context';
 import './styles.scss';
 
 export const DayScheduleList = memo(() => {
-  const { changingSchedule } = useContext(
+  const { schedule } = useContext(
     DialogContext
   );
   
-  if (!changingSchedule) {
+  if (!schedule) {
     return null;
   }
 
   return (
     <ul className='list-container'>
-      {changingSchedule.map((chunk,i) => <DayScheduleCard scheduleChunk={chunk} key={chunk['_id']} index={i} />)}
+      {schedule.map((chunk,i) => <DayScheduleCard scheduleChunk={chunk} key={chunk['_id']} index={i} />)}
     </ul>
   );
 })
