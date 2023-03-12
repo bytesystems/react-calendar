@@ -2,10 +2,9 @@ import React, { memo, useCallback, useContext, useMemo } from 'react'
 import { SCHEDULE_EVENT_TYPE } from '../../../../utils/schedule-event-type';
 import { CloseButton } from 'react-bootstrap';
 import { DialogContext } from '../../dialog-context';
-import TimePicker from "rc-time-picker";
-import moment from 'moment';
-import 'rc-time-picker/assets/index.css';
 import './styles.scss';
+import {RangeInput} from "../../../range-input";
+import moment from "moment";
 
 
 
@@ -32,6 +31,7 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
     [type]
   );
 
+
   const onScheduleChange = useCallback(
     (value, index, field) => {
       const val = moment(value);
@@ -50,40 +50,44 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
       <div className="card-content">
         <h3>{headerText}</h3>
         <div className="inputs-container">
-          <div style={{width: 'min-content'}}>
-            <label className="input-label">
-              from
-              <TimePicker
-                showSecond={false}
-                focusOnOpen={true}
-                format="HH:mm"
-                value={start}
-                onChange={(value) => {
-                  if(!moment(value).isSame(null,'day'))
-                  onScheduleChange(value, index, "start");
-                }}
-                style={{minWidth: '100px'}}
-              />
-            </label>
-            {startErrors && <span className="text-danger">{JSON.stringify(startErrors)}</span>}
-          </div>
+            <RangeInput
+                inputClassName="form-control"
+                onChange={(e) => console.log(e)}
+            />
+          {/*<div style={{width: 'min-content'}}>*/}
+          {/*  <label className="input-label">*/}
+          {/*    from*/}
+          {/*    <TimePicker*/}
+          {/*      showSecond={false}*/}
+          {/*      focusOnOpen={true}*/}
+          {/*      format="HH:mm"*/}
+          {/*      value={start}*/}
+          {/*      onChange={(value) => {*/}
+          {/*        if(!moment(value).isSame(null,'day'))*/}
+          {/*        onScheduleChange(value, index, "start");*/}
+          {/*      }}*/}
+          {/*      style={{minWidth: '100px'}}*/}
+          {/*    />*/}
+          {/*  </label>*/}
+          {/*  {startErrors && <span className="text-danger">{JSON.stringify(startErrors)}</span>}*/}
+          {/*</div>*/}
 
-          <div style={{width: 'min-content'}}>
-            <label className="input-label">
-              to
-              <TimePicker
-                showSecond={false}
-                focusOnOpen={true}
-                format="HH:mm"
-                value={stop}
-                onChange={(value) => {
-                  onScheduleChange(value, index, "stop");
-                }}
-                style={{minWidth: '100px'}}
-              />
-            </label>
-            {stopErrors && <p className="text-danger">{JSON.stringify(stopErrors)}</p>}
-          </div>
+          {/*<div style={{width: 'min-content'}}>*/}
+          {/*  <label className="input-label">*/}
+          {/*    to*/}
+          {/*    <TimePicker*/}
+          {/*      showSecond={false}*/}
+          {/*      focusOnOpen={true}*/}
+          {/*      format="HH:mm"*/}
+          {/*      value={stop}*/}
+          {/*      onChange={(value) => {*/}
+          {/*        onScheduleChange(value, index, "stop");*/}
+          {/*      }}*/}
+          {/*      style={{minWidth: '100px'}}*/}
+          {/*    />*/}
+          {/*  </label>*/}
+          {/*  {stopErrors && <p className="text-danger">{JSON.stringify(stopErrors)}</p>}*/}
+          {/*</div>*/}
         </div>
       </div>
       <div>

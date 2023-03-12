@@ -9,12 +9,12 @@ import { ChangeScheduleDialog } from "./components/change-schedule-dialog";
 
 import './custom.scss'
 import { Button } from "react-bootstrap";
+import {format} from "date-fns";
 
 export const WeekScheduleCalendar = (props) => {
   const {map} = props;
 
   const [dateScheduler, setDateScheduler] = useState(null);
-
   const [hoveredElement, setHoveredElement] = useState(false);
 
   const [dateToChangeSchedule, setDateToChangeSchedule] = useState(null);
@@ -35,9 +35,12 @@ export const WeekScheduleCalendar = (props) => {
   }, [setDateToChangeSchedule]);
 
   useLayoutEffect(() => {
-    const deepCopy = JSON.parse(JSON.stringify([...map]));
-    const deepCopyMap = new Map(deepCopy.map(([key, value]) => [moment(key).toDate().toString(), value]));
-    setDateScheduler(new DaysScheduler(deepCopyMap));
+
+    // const deepCopy = JSON.parse(JSON.stringify([...map]));
+    // const deepCopyMap = new Map(deepCopy.map(([key, value]) => [moment(key).toDate().toString(), value]));
+    //
+    // console.log(map,deepCopyMap)
+    setDateScheduler(new DaysScheduler(map));
   }, [map, setDateScheduler]);
 
   const onChangeDialogComplete = useCallback(() => {
@@ -46,13 +49,12 @@ export const WeekScheduleCalendar = (props) => {
 
   const DayCellContent = (props) => {
     const { date, dayNumberText, isToday } = props
-
+    const dateKey = format(date,'yyyyMMdd')
     if(!dateScheduler) {
       return <div>loading</div>
     }
-
-    const schedule = dateScheduler.getScheduleForDay(date.toString())
-    const totalTimeForDay = dateScheduler.getTotalTimeForDay(date.toString());
+    const schedule = dateScheduler.getScheduleForDay(dateKey)
+    const totalTimeForDay = dateScheduler.getTotalTimeForDay(dateKey);
       return (
         <div
           className="custom-cell-content"
