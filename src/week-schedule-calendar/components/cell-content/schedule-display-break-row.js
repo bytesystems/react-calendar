@@ -1,16 +1,13 @@
 import React, { memo, useMemo } from 'react'
 import { DaysScheduler } from '../../utils/days-scheduler';
+import {format24H} from "../../utils/time-utils";
 
 
 export const ScheduleDisplayBreakRow = memo((props) => {
   const { chunk } = props;
 
   const timeIn24Format = useMemo(() => {
-    const restTime = DaysScheduler.calculateTimeDiff(chunk)
-    const restTimeMinutes = restTime > 60 ? restTime % 60 : 0
-    const restTimeHours = restTime > 60 ? Math.trunc(restTime / 60) : restTime
-
-    return `${restTimeMinutes}h${restTimeHours}`
+    return format24H(chunk.duration.minutes)
   }, [chunk])
 
   return (

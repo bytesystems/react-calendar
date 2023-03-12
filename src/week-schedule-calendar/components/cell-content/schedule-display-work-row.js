@@ -5,9 +5,7 @@ export const ScheduleDisplayWorkRow = memo((props) => {
   const { chunk } = props;
   const { start, stop } = chunk;
 
-  const getTimeIn24Format = useCallback((time) => moment(time).format('HH:mm'), [])
-
   return (
-    <p style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{getTimeIn24Format(start)} --&gt; {getTimeIn24Format(stop)}</p>
+    <p style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>{start} --&gt; {stop}</p>
   )
 })
