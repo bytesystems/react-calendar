@@ -5,8 +5,8 @@ export const RangeInput = (props) => {
 
     const {className,inputClasses,onChange,errorMessageSameTime,errorMessageInvalidOrder, timespan} = props;
 
-    const [start,setStart] = useState(timespan.start ? timespan.start : null)
-    const [stop,setStop] = useState(timespan.stop ? timespan.stop : null)
+    const [start,setStart] = useState(timespan?.start ? timespan.start : null)
+    const [stop,setStop] = useState(timespan?.stop ? timespan.stop : null)
     const [duration,setDuration] = useState({minutes: 0, text:"0h"})
     const [valid,setValid] = useState(false)
     const [error,setError] = useState("")
