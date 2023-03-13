@@ -4,7 +4,7 @@ export const TimeInput = (props) => {
     const {className,onChange,initalValue} = props;
     const timeRegex = /^([01][0-9]|2[0-3]):[0-5][0-9]$/
 
-    const classNames = ['time-input',...className.split(' ').map(c => c.trim()).filter(c => c.length > 0)]
+    const classNames = ['time-input form-control col',...className.split(' ').map(c => c.trim()).filter(c => c.length > 0)]
     const [inputValue, setInputValue] = useState(initalValue ? initalValue : "");
     const [value, setValue] = useState(initalValue ? initalValue : null)
 

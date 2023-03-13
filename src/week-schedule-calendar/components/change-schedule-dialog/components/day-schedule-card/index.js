@@ -10,12 +10,10 @@ import moment from "moment";
 
 export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
 
-    console.log('scheduleChunk: ',scheduleChunk)
-
   const {
-    removeScheduleChunk,
+    removeChunk,
     formik,
-    changingSchedule,
+    schedule,
     changingScheduleErrors,
     currentDay,
   } = useContext(DialogContext);
@@ -36,18 +34,12 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
 
 
   const onScheduleChange = useCallback(
-    (value, index, field) => {
-      const val = moment(value);
-      if (!val.isSame(currentDayMoment, 'day')) {
-        changingSchedule[index][field] = moment(currentDayMoment).set('hours', val.hours()).set('minutes', val.minutes());
-      } else {
-        changingSchedule[index][field] = value;
-      }
-      formik.setFieldValue("schedule", changingSchedule);
+    (value, index) => {
+      schedule[index] = value;
+      formik.setFieldValue("schedule", schedule);
     },
-    [changingSchedule, formik, currentDayMoment]
+    [schedule, formik, currentDayMoment]
   );
-
   return (
     <li className="schedule-card-container">
       <div className="card-content">
@@ -55,13 +47,16 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
         <div className="inputs-container">
             <RangeInput
                 inputClassName="form-control"
-                onChange={(e) => console.log(e)}
+                onChange={(value) => {
+                  onScheduleChange(value, index);
+                }}
+                // onChange={(e) => console.log(e)}
                 timespan={scheduleChunk}
             />
         </div>
       </div>
       <div>
-        <CloseButton onClick={() => removeScheduleChunk(index)} />
+        <CloseButton onClick={() => removeChunk(index)} />
       </div>
     </li>
   );

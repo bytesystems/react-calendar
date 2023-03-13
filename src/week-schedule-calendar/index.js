@@ -13,6 +13,7 @@ import {format} from "date-fns";
 
 export const WeekScheduleCalendar = (props) => {
   const {map} = props;
+  console.log('WeekScheduleCalendar :',map)
 
   const [dateScheduler, setDateScheduler] = useState(null);
   const [hoveredElement, setHoveredElement] = useState(false);
@@ -20,15 +21,22 @@ export const WeekScheduleCalendar = (props) => {
   const [dateToChangeSchedule, setDateToChangeSchedule] = useState(null);
   const changingDaySchedule = useMemo(
     () => {
+
+      if(dateScheduler,dateToChangeSchedule )
+      {
+        console.log('changingDaySchedule', dateScheduler,dateToChangeSchedule,dateScheduler.getScheduleForDay(dateToChangeSchedule))
+      }
+
+
       return dateScheduler && dateToChangeSchedule
-          ? dateScheduler.getScheduleForDay(format(dateToChangeSchedule,'yyyyMMdd'))
+          ? dateScheduler.getScheduleForDay(dateToChangeSchedule)
           : null
     },
     [dateScheduler, dateToChangeSchedule]
   );
 
   const openDialogPopup = useCallback((date) => {
-    setDateToChangeSchedule(date)
+    setDateToChangeSchedule(format(date,'yyyyMMdd'))
   }, [setDateToChangeSchedule]);
 
   const closeDialogPopup = useCallback(() => {
@@ -37,10 +45,12 @@ export const WeekScheduleCalendar = (props) => {
 
   useLayoutEffect(() => {
     setDateScheduler(new DaysScheduler(map));
-  }, [map, setDateScheduler]);
+  }, [map]);
 
-  const onChangeDialogComplete = useCallback(() => {
-    console.log('on Complete change')
+  const onChangeDialogComplete = useCallback((date,schedule) => {
+    setDateToChangeSchedule(null)
+    // map.set(date,schedule)
+    console.log('on Complete change',date,schedule)
   }, []);
 
   const DayCellContent = (props) => {
@@ -51,6 +61,7 @@ export const WeekScheduleCalendar = (props) => {
     }
     const schedule = dateScheduler.getScheduleForDay(dateKey)
     const totalTimeForDay = dateScheduler.getTotalTimeForDay(dateKey);
+    console.log('DayCellContent: ',schedule)
       return (
         <div
           className="custom-cell-content"

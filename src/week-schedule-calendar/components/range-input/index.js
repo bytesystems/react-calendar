@@ -1,11 +1,12 @@
 import {TimeInput} from "../time-input";
 import {useEffect, useState} from "react";
+import PropTypes from "prop-types";
 
 export const RangeInput = (props) => {
 
     const {className,inputClasses,onChange,errorMessageSameTime,errorMessageInvalidOrder, timespan} = props;
 
-    console.log('timespan: ',timespan)
+    const classNames = ['range-input',...className.split(' ').map(c => c.trim()).filter(c => c.length > 0)]
 
     const [start,setStart] = useState(timespan?.start ? timespan.start : null)
     const [stop,setStop] = useState(timespan?.stop ? timespan.stop : null)
@@ -70,19 +71,41 @@ export const RangeInput = (props) => {
     }
 
     return (
-        <div className="range-input">
-            <TimeInput
-                onChange={onStartChangeHandler}
-                className={`start${error ? " invalid":""}`}
-                initalValue={start}
-            />
-            <TimeInput
-                onChange={onStopChangeHandler}
-                className={`stop${error ? " invalid":""}`}
-                initalValue={stop}
-            />
-            {error && <div>{error}</div>}
-            <div>{duration.text}</div>
+        <div className={classNames.join(' ').trim()}>
+            <div className="form-row">
+                <div className="col-4">
+                    <TimeInput
+                        onChange={onStartChangeHandler}
+                        className={`start${error ? " is-invalid":""}`}
+                        initalValue={start}
+                    />
+                </div>
+                <div className="col-4">
+                    <TimeInput
+                        onChange={onStopChangeHandler}
+                        className={`stop${error ? " is-invalid":""}`}
+                        initalValue={stop}
+                    />
+                </div>
+                <div className="col-4">
+                    <span class="badge badge-pill badge-success">{duration.text}</span>
+                </div>
+
+
+            </div>
+            <div className="form-row">
+                <div className="col">
+                    {error && <div className="invalid-feedback">{error}</div>}
+                </div>
+            </div>
         </div>
     )
+}
+
+RangeInput.propTypes = {
+    className: PropTypes.string,
+}
+
+RangeInput.defaultProps = {
+    className: ""
 }

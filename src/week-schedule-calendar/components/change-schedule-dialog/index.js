@@ -135,7 +135,8 @@ const validationSchema = Yup.object().shape({
 });
 
 export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, currentDaySchedule, onConfirm }) => {
-  console.log(currentDaySchedule)
+
+  console.log('ChangeScheduleDialog: ',currentDaySchedule)
 
   const currentDayTitle = useMemo(() => {
     return moment(currentDay).format('dddd, D. MMMM YYYY')
@@ -153,10 +154,10 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
       let nextObj = arr[i + 1];
 
       // Check if the stop time of the current object overlaps with the start time of the next object
-      if (currentObj.stop >= nextObj.start) {
+      if (currentObj.stop >= nextObj.start && currentObj.type === nextObj.type) {
         error = true;
-        currentObj.invalid = true;
-        nextObj.invalid = true;
+        currentObj.overlap = true;
+        nextObj.overlap= true;
       }
     }
 
@@ -164,27 +165,27 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
   }
 
 
-  // const formik = useFormik({initialValues: { schedule: [] }, validationSchema, validate });
+  const formik = useFormik({initialValues: { schedule: [] }, validationSchema, validate });
   //
-  // const changingSchedule = useMemo(() => formik.values.schedule ?? [], [formik.values.schedule]);
+  const changingSchedule = useMemo(() => formik.values.schedule ?? [], [formik.values.schedule]);
   // const changingScheduleErrors = useMemo(() => formik.errors.schedule ?? [], [formik.errors.schedule]);
   //
-  // useEffect(() => {
-  //   formik.setFieldValue('schedule', currentDaySchedule ?JSON.parse(JSON.stringify(currentDaySchedule)).map((chunk) => ({...chunk, start: moment(chunk.start), stop: moment(chunk.stop)})) : [])
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentDaySchedule]);
+  useEffect(() => {
+    formik.setFieldValue('schedule', currentDaySchedule ?? [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDaySchedule]);
   //
-  // const removeScheduleChunk = useCallback((index) => {
-  //   formik.setFieldValue('schedule', changingSchedule.filter((_, i) => index !== i))
-  // }, [changingSchedule, formik]);
-  //
-  // const addScheduleChunk = useCallback((eventType) => {
-  //   formik.setFieldValue('schedule', [...changingSchedule, {type: eventType, start: null, stop: null, _id: v4()}])
-  // }, [formik, changingSchedule])
+  const removeScheduleChunk = useCallback((index) => {
+    formik.setFieldValue('schedule', changingSchedule.filter((_, i) => index !== i))
+  }, [changingSchedule, formik]);
+
+  const addScheduleChunk = useCallback((eventType) => {
+    formik.setFieldValue('schedule', [...changingSchedule, {type: eventType, start: null, stop: null, _id: v4()}])
+  }, [formik, changingSchedule])
 
     return (
       <DialogContext.Provider
-        value={{ date: currentDay, schedule: currentDaySchedule }}
+        value={{ date: currentDay, schedule: changingSchedule, removeChunk: removeScheduleChunk, formik: formik }}
       >
         <PopUp isOpened={isOpened} onClose={onClose}>
           <div
@@ -204,20 +205,20 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
                 <DayScheduleList />
               </div>
               <div className="row">
-                {/*<div className="col">*/}
-                {/*  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.WORK)}>*/}
-                {/*    add work time*/}
-                {/*  </Button>*/}
-                {/*</div>*/}
-                {/*<div className="col">*/}
-                {/*  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.BREAK)}>*/}
-                {/*    add rest time*/}
-                {/*  </Button>*/}
-                {/*</div>*/}
+                <div className="col">
+                  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.WORK)}>
+                    add work time
+                  </Button>
+                </div>
+                <div className="col">
+                  <Button className="w-100" variant="light" onClick={() => addScheduleChunk(SCHEDULE_EVENT_TYPE.BREAK)}>
+                    add rest time
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="d-flex flex-row-reverse">
-              <Button>save</Button>
+              <Button onClick={() => onConfirm(currentDay, changingSchedule)}>save</Button>
             </div>
           </div>
         </PopUp>
