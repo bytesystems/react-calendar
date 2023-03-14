@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useMemo, useState } from "react";
+import React, {createRef, useCallback, useLayoutEffect, useMemo, useState} from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import moment from "moment";
@@ -10,58 +10,53 @@ import { ChangeScheduleDialog } from "./components/change-schedule-dialog";
 import './custom.scss'
 import { Button } from "react-bootstrap";
 import {format} from "date-fns";
+import {events} from "../api/events";
+import {calculateTotalTime} from "./utils/time-utils";
 
 export const WeekScheduleCalendar = (props) => {
+  const calendarRef = createRef()
+
   const {map} = props;
-  console.log('WeekScheduleCalendar :',map)
 
-  const [dateScheduler, setDateScheduler] = useState(null);
+  const [show, setShow] = useState(false)
   const [hoveredElement, setHoveredElement] = useState(false);
-
-  const [dateToChangeSchedule, setDateToChangeSchedule] = useState(null);
-  const changingDaySchedule = useMemo(
-    () => {
-
-      if(dateScheduler,dateToChangeSchedule )
-      {
-        console.log('changingDaySchedule', dateScheduler,dateToChangeSchedule,dateScheduler.getScheduleForDay(dateToChangeSchedule))
-      }
+  const [currentDate,setCurrentDate] = useState(null)
+  const [currentSchedule,setCurrentSchedule] = useState(null)
 
 
-      return dateScheduler && dateToChangeSchedule
-          ? dateScheduler.getScheduleForDay(dateToChangeSchedule)
-          : null
-    },
-    [dateScheduler, dateToChangeSchedule]
-  );
 
-  const openDialogPopup = useCallback((date) => {
-    setDateToChangeSchedule(format(date,'yyyyMMdd'))
-  }, [setDateToChangeSchedule]);
+  const openDialogPopup = useCallback((date,schedule) => {
+    setShow(true)
+    setCurrentSchedule(schedule)
+    setCurrentDate(date)
+  }, [setCurrentSchedule,setCurrentDate]);
 
   const closeDialogPopup = useCallback(() => {
-    setDateToChangeSchedule(null)
-  }, [setDateToChangeSchedule]);
-
-  useLayoutEffect(() => {
-    setDateScheduler(new DaysScheduler(map));
-  }, [map]);
+    setShow(false)
+    setCurrentSchedule(null)
+    setCurrentDate(null)
+  }, [setCurrentSchedule,setCurrentDate]);
+  //
+  // useLayoutEffect(() => {
+  //   setDateScheduler(new DaysScheduler(map));
+  // }, [map]);
 
   const onChangeDialogComplete = useCallback((date,schedule) => {
-    setDateToChangeSchedule(null)
+    const calendarApi = calendarRef.current.getApi()
+    const event = calendarApi.getEventById(format(date,'yyyy-MM-dd'))
+    event.setExtendedProp('schedule',schedule)
+    calendarApi.refetchEvents()
+    setShow(false)
     // map.set(date,schedule)
     console.log('on Complete change',date,schedule)
-  }, []);
+  }, [calendarRef]);
 
   const DayCellContent = (props) => {
-    const { date, dayNumberText, isToday } = props
-    const dateKey = format(date,'yyyyMMdd')
-    if(!dateScheduler) {
-      return <div>loading</div>
-    }
-    const schedule = dateScheduler.getScheduleForDay(dateKey)
-    const totalTimeForDay = dateScheduler.getTotalTimeForDay(dateKey);
-    console.log('DayCellContent: ',schedule)
+    const { date, dayNumberText, isToday, view } = props
+    const event = view.calendar.getEventById(format(date,'yyyy-MM-dd'))
+    const schedule = event ? event.extendedProps.schedule : null
+    const totalTimeForDay = schedule ? calculateTotalTime(schedule) : null
+
       return (
         <div
           className="custom-cell-content"
@@ -81,6 +76,7 @@ export const WeekScheduleCalendar = (props) => {
                   workTime={totalTimeForDay.workTime}
                   restTime={totalTimeForDay.restTime}
                 />
+                aaa
                 <ScheduleDisplay schedule={schedule} />
               </>
             )}
@@ -95,7 +91,7 @@ export const WeekScheduleCalendar = (props) => {
                   : "0",
             }}
             onClick={() => {
-              openDialogPopup(date);
+              openDialogPopup(date,schedule);
             }}
           >+</Button>
         </div>
@@ -105,24 +101,26 @@ export const WeekScheduleCalendar = (props) => {
   return (
     <>
       <FullCalendar
+        ref={calendarRef}
         firstDay={1}
         headerToolbar={{
           left: "",
           center: "title",
           right: "today,prev,next",
         }}
-        themeSystem="Simplex"
+        // themeSystem="Simplex"
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
         eventDisplay="none"
         dayCellContent={DayCellContent}
-        contentHeight="auto"
+        // contentHeight="auto"
+        events={events}
       />
       <ChangeScheduleDialog
         onClose={closeDialogPopup}
-        isOpened={!!dateToChangeSchedule}
-        currentDay={dateToChangeSchedule}
-        currentDaySchedule={changingDaySchedule}
+        isOpened={show}
+        currentDay={currentDate}
+        currentDaySchedule={currentSchedule}
         onConfirm={onChangeDialogComplete}
       />
     </>

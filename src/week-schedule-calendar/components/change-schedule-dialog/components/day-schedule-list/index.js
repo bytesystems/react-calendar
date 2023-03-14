@@ -7,7 +7,7 @@ export const DayScheduleList = memo(() => {
   const { schedule } = useContext(
     DialogContext
   );
-  
+
   if (!schedule) {
     return null;
   }

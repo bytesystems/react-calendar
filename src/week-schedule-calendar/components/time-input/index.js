@@ -1,6 +1,9 @@
 import {useEffect, useState} from "react";
 import PropTypes from 'prop-types';
+import {useMounted} from "../../hooks";
 export const TimeInput = (props) => {
+    const mounted = useMounted();
+
     const {className,onChange,initalValue} = props;
     const timeRegex = /^([01][0-9]|2[0-3]):[0-5][0-9]$/
 
@@ -108,6 +111,7 @@ export const TimeInput = (props) => {
     ];
 
     useEffect(() => {
+        if(!mounted) return;
         onChange && onChange(value)
     },[value])
 

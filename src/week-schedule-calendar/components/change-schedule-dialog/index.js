@@ -136,8 +136,6 @@ const validationSchema = Yup.object().shape({
 
 export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, currentDaySchedule, onConfirm }) => {
 
-  console.log('ChangeScheduleDialog: ',currentDaySchedule)
-
   const currentDayTitle = useMemo(() => {
     return moment(currentDay).format('dddd, D. MMMM YYYY')
   }, [currentDay]);

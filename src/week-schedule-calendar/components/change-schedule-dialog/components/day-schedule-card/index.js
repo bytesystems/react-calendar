@@ -23,10 +23,7 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
   // const stopErrors = useMemo(() => cardErrors ? cardErrors.stop : null, [cardErrors]);
 
   const currentDayMoment = useMemo(() => moment(currentDay), [currentDay]);
-
-
-  const {type, start, stop} = scheduleChunk;
-    // console.log({start, stop})
+  const {type} = scheduleChunk;
   const headerText = useMemo(
     () => (type === SCHEDULE_EVENT_TYPE.BREAK ? "Break" : "Work"),
     [type]
@@ -35,7 +32,7 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
 
   const onScheduleChange = useCallback(
     (value, index) => {
-      schedule[index] = value;
+      schedule[index] = {...schedule[index], ...value};
       formik.setFieldValue("schedule", schedule);
     },
     [schedule, formik, currentDayMoment]
@@ -50,7 +47,6 @@ export const DayScheduleCard = memo(({ scheduleChunk, index }) => {
                 onChange={(value) => {
                   onScheduleChange(value, index);
                 }}
-                // onChange={(e) => console.log(e)}
                 timespan={scheduleChunk}
             />
         </div>

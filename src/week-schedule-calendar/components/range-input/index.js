@@ -1,8 +1,10 @@
 import {TimeInput} from "../time-input";
 import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
+import {useMounted} from "../../hooks";
 
 export const RangeInput = (props) => {
+    const mounted = useMounted();
 
     const {className,inputClasses,onChange,errorMessageSameTime,errorMessageInvalidOrder, timespan} = props;
 
@@ -28,6 +30,7 @@ export const RangeInput = (props) => {
 
     useEffect(() => {
         if(error) return;
+        if(!mounted) return;
 
         onChange(
             {
@@ -45,7 +48,7 @@ export const RangeInput = (props) => {
             setValid(false)
             return
         }
-        if(start==stop) {
+        if(start===stop) {
             setDuration({minutes: 0, text:"0h"})
             setValid(false)
             setError("Anfang und Ende der Zeitspanne dürfen nicht gleiche sein.")
@@ -88,7 +91,7 @@ export const RangeInput = (props) => {
                     />
                 </div>
                 <div className="col-4">
-                    <span class="badge badge-pill badge-success">{duration.text}</span>
+                    <span className="badge badge-pill badge-success">{duration.text}</span>
                 </div>
 
 
