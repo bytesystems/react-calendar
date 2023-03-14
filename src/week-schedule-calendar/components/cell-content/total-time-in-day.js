@@ -1,14 +1,11 @@
-import React, { memo } from 'react'
+import React, {memo, useMemo} from 'react'
+import {format24H} from "../../utils/time-utils";
 
 export const TotalTimeInDay = memo((props) => {
   const { workTime, restTime } = props;
 
-  const workTimeMinutes = workTime % 60
-  const workTimeHours = Math.trunc(workTime / 60)
-  const restTimeMinutes = restTime > 60 ? restTime % 60 : 0
-  const restTimeHours = restTime > 60 ? Math.trunc(restTime / 60) : restTime
 
   return (
-    <b className="total-time-in-delay">{`${workTimeHours}h${workTimeMinutes} + ${restTimeMinutes}h${restTimeHours} Pause`}</b>
+    <b className="total-time-in-delay">{ `${format24H(workTime)} Arbeit + ${format24H(restTime)} Pause`}</b>
   )
 })
