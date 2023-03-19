@@ -10,6 +10,8 @@ export const ScheduleDisplayBreakRow = memo((props) => {
     return format24H(chunk.duration.minutes)
   }, [chunk])
 
+    if(chunk.duration.minutes === 0) return null
+
   return (
     <p
       style={{

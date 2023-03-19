@@ -12,6 +12,7 @@ import { Button } from "react-bootstrap";
 import {format} from "date-fns";
 import {events} from "../api/events";
 import {calculateTotalTime} from "./utils/time-utils";
+import {SCHEDULE_EVENT_TYPE} from "./utils/schedule-event-type";
 
 export const WeekScheduleCalendar = (props) => {
   const calendarRef = createRef()
@@ -36,19 +37,29 @@ export const WeekScheduleCalendar = (props) => {
     setCurrentSchedule(null)
     setCurrentDate(null)
   }, [setCurrentSchedule,setCurrentDate]);
-  //
-  // useLayoutEffect(() => {
-  //   setDateScheduler(new DaysScheduler(map));
-  // }, [map]);
 
   const onChangeDialogComplete = useCallback((date,schedule) => {
     const calendarApi = calendarRef.current.getApi()
     const event = calendarApi.getEventById(format(date,'yyyy-MM-dd'))
-    event.setExtendedProp('schedule',schedule)
+    if(event) {
+      event.setExtendedProp('schedule',schedule)
+    }
+    else {
+      const newEvent =   {
+        title: format(date,'yyyy-MM-dd'),
+        start: format(date,'yyyy-MM-dd'),
+        id: format(date,'yyyy-MM-dd'),
+        allDay: true,
+        schedule
+      }
+      calendarApi.addEvent(newEvent)
+      events.push(newEvent)
+    }
+
     calendarApi.refetchEvents()
     setShow(false)
-    // map.set(date,schedule)
-    console.log('on Complete change',date,schedule)
+    setCurrentSchedule(null)
+    setCurrentDate(null)
   }, [calendarRef]);
 
   const DayCellContent = (props) => {
@@ -56,7 +67,6 @@ export const WeekScheduleCalendar = (props) => {
     const event = view.calendar.getEventById(format(date,'yyyy-MM-dd'))
     const schedule = event ? event.extendedProps.schedule : null
     const totalTimeForDay = schedule ? calculateTotalTime(schedule) : null
-
       return (
         <div
           className="custom-cell-content"
@@ -76,7 +86,6 @@ export const WeekScheduleCalendar = (props) => {
                   workTime={totalTimeForDay.workTime}
                   restTime={totalTimeForDay.restTime}
                 />
-                aaa
                 <ScheduleDisplay schedule={schedule} />
               </>
             )}

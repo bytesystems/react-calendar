@@ -11,6 +11,7 @@ import { v4 } from 'uuid';
 import { validate } from '../../utils/errors-builder';
 
 import './styles.scss';
+import {format} from "date-fns";
 
 const validationSchema = Yup.object().shape({
   schedule: Yup.array()
@@ -135,10 +136,15 @@ const validationSchema = Yup.object().shape({
 });
 
 export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, currentDaySchedule, onConfirm }) => {
-
   const currentDayTitle = useMemo(() => {
-    return moment(currentDay).format('dddd, D. MMMM YYYY')
+    return currentDay ? format(currentDay,'eeee, dd. LLLL yyyy') : ''
   }, [currentDay]);
+
+  const schedule = useMemo(() => currentDaySchedule ?? [
+      {type: SCHEDULE_EVENT_TYPE.WORK, start: null, stop: null, _id: v4()},
+      {type: SCHEDULE_EVENT_TYPE.BREAK, start: null, stop: null, _id: v4()}
+    ]
+  ,[currentDay,currentDaySchedule])
 
   let error = false;
 
@@ -162,28 +168,23 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
     return arr;
   }
 
-
-  const formik = useFormik({initialValues: { schedule: [] }, validationSchema, validate });
+  const formik = useFormik({initialValues: { schedule: (schedule ?? [
+        {type: SCHEDULE_EVENT_TYPE.WORK, start: null, stop: null, _id: v4()},
+        {type: SCHEDULE_EVENT_TYPE.BREAK, start: null, stop: null, _id: v4()}
+      ]) }, validationSchema, validate, enableReinitialize: true });
   //
-  const changingSchedule = useMemo(() => formik.values.schedule ?? [], [formik.values.schedule]);
   // const changingScheduleErrors = useMemo(() => formik.errors.schedule ?? [], [formik.errors.schedule]);
-  //
-  useEffect(() => {
-    formik.setFieldValue('schedule', currentDaySchedule ?? [])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentDaySchedule]);
-  //
   const removeScheduleChunk = useCallback((index) => {
-    formik.setFieldValue('schedule', changingSchedule.filter((_, i) => index !== i))
-  }, [changingSchedule, formik]);
+    formik.setFieldValue('schedule', formik.values.schedule.filter((_, i) => index !== i))
+  }, [formik]);
 
   const addScheduleChunk = useCallback((eventType) => {
-    formik.setFieldValue('schedule', [...changingSchedule, {type: eventType, start: null, stop: null, _id: v4()}])
-  }, [formik, changingSchedule])
+    formik.setFieldValue('schedule', [...formik.values.schedule, {type: eventType, start: null, stop: null, _id: v4()}])
+  }, [formik])
 
     return (
       <DialogContext.Provider
-        value={{ date: currentDay, schedule: changingSchedule, removeChunk: removeScheduleChunk, formik: formik }}
+        value={{ date: currentDay, schedule: formik.values.schedule, removeChunk: removeScheduleChunk, formik: formik }}
       >
         <PopUp isOpened={isOpened} onClose={onClose}>
           <div
@@ -216,7 +217,7 @@ export const ChangeScheduleDialog = memo(({ onClose, isOpened, currentDay, curre
               </div>
             </div>
             <div className="d-flex flex-row-reverse">
-              <Button onClick={() => onConfirm(currentDay, changingSchedule)}>save</Button>
+              <Button onClick={() => onConfirm(currentDay, formik.values.schedule)}>save</Button>
             </div>
           </div>
         </PopUp>
